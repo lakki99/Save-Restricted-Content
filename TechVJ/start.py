@@ -141,14 +141,11 @@ elif "https://t.me/b/" in message.text:
 # tg://openmessage link
 elif "tg://openmessage?" in message.text:
     try:
-        # user_id=XXXX&message_id=YYYY extract cheyyali
         import re
         match = re.search(r"user_id=(\d+)&message_id=(\d+)", message.text)
         if match:
             user_id = int(match.group(1))
             msg_id = int(match.group(2))
-
-            # handle_private ki user_id & msg_id pampadam
             await handle_private(client, acc, message, user_id, msg_id)
         else:
             await client.send_message(message.chat.id, "Invalid tg://openmessage link format.", reply_to_message_id=message.id)
@@ -156,25 +153,23 @@ elif "tg://openmessage?" in message.text:
     except Exception as e:
         if ERROR_MESSAGE == True:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-          
-            # public
-            else:
-                username = datas[3]
 
-                try:
-                    msg = await client.get_messages(username, msgid)
-                except UsernameNotOccupied: 
-                    await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
-                    return
-                try:
-                    await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
-                except:
-                    try:    
-                        await handle_private(client, acc, message, username, msgid)               
-                    except Exception as e:
-                        if ERROR_MESSAGE == True:
-                            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-
+# public
+else:
+    username = datas[3]
+    try:
+        msg = await client.get_messages(username, msgid)
+    except UsernameNotOccupied: 
+        await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
+        return
+    try:
+        await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
+    except:
+        try:    
+            await handle_private(client, acc, message, username, msgid)               
+        except Exception as e:
+            if ERROR_MESSAGE == True:
+                await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
             # wait time
             await asyncio.sleep(3)
         batch_temp.IS_BATCH[message.from_user.id] = True
