@@ -132,25 +132,35 @@ async def save(client: Client, message: Message):
 
 
             if "tg://openmessage?" in message.text:
-                try:
-                    from urllib.parse import urlparse, parse_qs
+              try:
+                  from urllib.parse import urlparse, parse_qs
 
-        # parse url
-                    parsed = urlparse(message.text)
-                    params = parse_qs(parsed.query)
+                  parsed = urlparse(message.text)
+                  params = parse_qs(parsed.query)
 
-                    user_id = int(params.get("user_id", [0])[0])
-                    msgid = int(params.get("message_id", [0])[0])
+                  user_id = int(params.get("user_id", [0])[0])
+                  msgid = int(params.get("message_id", [0])[0])
 
-        # user chat id direct gaa user_id
-                    chatid = user_id  
+        # chatid = user_id  ✅ direct ga numeric ID use cheyyali
+                  chatid = user_id
 
-                    await handle_private(client, acc, message, chatid, msgid)
+        # ikada forward/copy cheseydaniki
+        try:
+            await client.forward_messages(
+                chat_id=message.chat.id,   # where to send
+                from_chat_id=chatid,       # from this user
+                message_ids=msgid
+            )
+        except Exception as e:
+            await client.send_message(
+                message.chat.id,
+                f"Error forwarding message: {e}",
+                reply_to_message_id=message.id
+            )
 
-                except Exception as e:
-                    if ERROR_MESSAGE:
-                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-            
+    except Exception as e:
+        if ERROR_MESSAGE:
+            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
             # bot
             elif "https://t.me/b/" in message.text:
                 username = datas[4]
