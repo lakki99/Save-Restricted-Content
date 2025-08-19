@@ -121,23 +121,42 @@ async def save(client: Client, message: Message):
                 return await message.reply("**Your Login Session Expired. So /logout First Then Login Again By - /login**")
             
             # private
-            if "https://t.me/c/" in message.text:
-                chatid = int("-100" + datas[4])
-                try:
-                    await handle_private(client, acc, message, chatid, msgid)
-                except Exception as e:
-                    if ERROR_MESSAGE == True:
-                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-    
-            # bot
-            elif "https://t.me/b/" in message.text:
-                username = datas[4]
-                try:
-                    await handle_private(client, acc, message, username, msgid)
-                except Exception as e:
-                    if ERROR_MESSAGE == True:
-                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-            
+if "https://t.me/c/" in message.text:
+    chatid = int("-100" + datas[4])
+    try:
+        await handle_private(client, acc, message, chatid, msgid)
+    except Exception as e:
+        if ERROR_MESSAGE == True:
+            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+
+# bot
+elif "https://t.me/b/" in message.text:
+    username = datas[4]
+    try:
+        await handle_private(client, acc, message, username, msgid)
+    except Exception as e:
+        if ERROR_MESSAGE == True:
+            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+
+# tg://openmessage link
+elif "tg://openmessage?" in message.text:
+    try:
+        # user_id=XXXX&message_id=YYYY extract cheyyali
+        import re
+        match = re.search(r"user_id=(\d+)&message_id=(\d+)", message.text)
+        if match:
+            user_id = int(match.group(1))
+            msg_id = int(match.group(2))
+
+            # handle_private ki user_id & msg_id pampadam
+            await handle_private(client, acc, message, user_id, msg_id)
+        else:
+            await client.send_message(message.chat.id, "Invalid tg://openmessage link format.", reply_to_message_id=message.id)
+
+    except Exception as e:
+        if ERROR_MESSAGE == True:
+            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+          
             # public
             else:
                 username = datas[3]
