@@ -145,22 +145,22 @@ async def save(client: Client, message: Message):
                   chatid = user_id
 
         # ikada forward/copy cheseydaniki
-        try:
-            await client.forward_messages(
-                chat_id=message.chat.id,   # where to send
-                from_chat_id=chatid,       # from this user
-                message_ids=msgid
-            )
-        except Exception as e:
-            await client.send_message(
-                message.chat.id,
-                f"Error forwarding message: {e}",
-                reply_to_message_id=message.id
-            )
+                  try:
+                      await client.forward_messages(
+                          chat_id=message.chat.id,   # where to send
+                          from_chat_id=chatid,       # from this user
+                          message_ids=msgid
+                      )
+                  except Exception as e:
+                      await client.send_message(
+                          message.chat.id,
+                          f"Error forwarding message: {e}",
+                          reply_to_message_id=message.id
+                      )
 
-    except Exception as e:
-        if ERROR_MESSAGE:
-            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+              except Exception as e:
+                  if ERROR_MESSAGE:
+                      await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
             # bot
             elif "https://t.me/b/" in message.text:
                 username = datas[4]
