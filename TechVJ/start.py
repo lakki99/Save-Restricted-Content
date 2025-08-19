@@ -303,7 +303,8 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     try:
         msg.text
         return "Text"
-    except: pass    while True:
+    except: pass   
+    while True:
         if os.path.exists(statusfile):
             break
 
