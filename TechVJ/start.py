@@ -131,7 +131,7 @@ async def save(client: Client, message: Message):
 
 
 
-            elif "tg://openmessage?" in message.text:
+            if "tg://openmessage?" in message.text:
                 try:
                     from urllib.parse import urlparse, parse_qs
 
