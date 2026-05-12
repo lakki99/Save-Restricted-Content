@@ -182,7 +182,31 @@ async def auto_save_pm(client: Client, message: Message):
             return
 
         # save media
-        await message.copy("me")
+        try:
+            await message.copy("me")
+        except Exception:
+            msg_type = get_message_type(message)
+            if msg_type:
+                file = await client.download_media(message)
+                caption = message.caption if message.caption else None
+
+                if msg_type == "Photo":
+                    await client.send_photo("me", photo=file, caption=caption)
+                elif msg_type == "Video":
+                    await client.send_video("me", video=file, caption=caption)
+                elif msg_type == "Document":
+                    await client.send_document("me", document=file, caption=caption)
+                elif msg_type == "Audio":
+                    await client.send_audio("me", audio=file, caption=caption)
+                elif msg_type == "Voice":
+                    await client.send_voice("me", voice=file, caption=caption)
+                elif msg_type == "Animation":
+                    await client.send_animation("me", animation=file, caption=caption)
+                elif msg_type == "Sticker":
+                    await client.send_sticker("me", sticker=file)
+
+                if os.path.exists(file):
+                    os.remove(file)
 
     except Exception as e:
         if ERROR_MESSAGE:
