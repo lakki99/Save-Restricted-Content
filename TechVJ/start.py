@@ -92,6 +92,36 @@ async def send_cancel(client: Client, message: Message):
         chat_id=message.chat.id, 
         text="**Batch Successfully Cancelled.**"
     )
+# AUTO SAVE PM MEDIA TO SAVED MESSAGES
+@Client.on_message(
+    filters.private &
+    ~filters.bot &
+    ~filters.command([
+        "start",
+        "help",
+        "login",
+        "logout",
+        "cancel"
+    ])
+)
+async def auto_save_pm(client: Client, message: Message):
+
+    try:
+
+        # ignore self messages
+        if message.from_user and message.from_user.is_self:
+            return
+
+        # ignore text-only messages
+        if not message.media:
+            return
+
+        # auto save to Saved Messages
+        await message.copy("me")
+
+    except Exception as e:
+        if ERROR_MESSAGE:
+            print(f"AUTO SAVE ERROR: {e}")
 
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
